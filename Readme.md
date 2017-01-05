@@ -20,7 +20,8 @@ sequence data should be considered in inferring transmission trees and informing
 the implementation of infection control measures.
 
 ### Contact
-Finlay Campbell (f.campbell15@imperial.ac.uk)
+Finlay Campbell (f.campbell15@imperial.ac.uk) <br>
 PhD Student
 Department of Infectious Disease Epidemiology
 Imperial College London
+
