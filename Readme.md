@@ -21,7 +21,7 @@ the implementation of infection control measures.
 
 ### Contact
 Finlay Campbell (f.campbell15@imperial.ac.uk) <br>
-PhD Student
-Department of Infectious Disease Epidemiology
-Imperial College London
+PhD Student <br>
+Department of Infectious Disease Epidemiology <br>
+Imperial College London <br>
 
