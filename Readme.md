@@ -18,3 +18,9 @@ describe the distribution of values for the genetic signature in realistic
 outbreak scenarios. This will inform us of epidemic situations for which genetic
 sequence data should be considered in inferring transmission trees and informing
 the implementation of infection control measures.
+
+### Contact
+Finlay Campbell (f.campbell15@imperial.ac.uk)
+PhD Student
+Department of Infectious Disease Epidemiology
+Imperial College London
