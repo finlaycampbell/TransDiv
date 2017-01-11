@@ -5,35 +5,19 @@
 ## Describe pathogen parameters
 create.param <- function() {
 
-    ebola.w.mean <- 15.3
-    ebola.w.sd <- 9.3
-    ebola.w <- sapply(1:100,EpiEstim::DiscrSI,ebola.w.mean,ebola.w.sd)
+    ## Returns a discretized gamma distribution
+    discr.gamma <- function(mean, sd) {
+        w <- sapply(1:100, EpiEstim::DiscrSI, mean, sd)
+        return(w)
+    }
 
-    sars.w.mean <- 8.4
-    sars.w.sd <- 3.8
-    sars.weib.shape <- (sars.w.sd/sars.w.mean)^-1.086
-    sars.weib.scale <- sars.w.mean/gamma(1+1/sars.weib.shape)
-    sars.w <- dweibull(1:100,shape=sars.weib.shape,scale=sars.weib.scale)
-
-    mers.w.mean <- 10.7
-    mers.w.sd <- 6.0
-    mers.w <- sapply(1:100,EpiEstim::DiscrSI,mers.w.mean,mers.w.sd)
-
-    ifz.w.mean <- 3.0
-    ifz.w.sd <- 1.5
-    ifz.w <- sapply(1:100,EpiEstim::DiscrSI,ifz.w.mean,ifz.w.sd)
-
-    mrsa.w.mean <- 15.6
-    mrsa.w.sd <- 10.0
-    mrsa.w <- sapply(1:100,EpiEstim::DiscrSI,mrsa.w.mean,mrsa.w.sd)
-
-    klebs.w.mean <- 62.7
-    klebs.w.sd <- 24.0
-    klebs.w <- sapply(1:100,EpiEstim::DiscrSI,klebs.w.mean,klebs.w.sd)
-
-    strep.w.mean <- 6.6
-    strep.w.sd <- 1.8
-    strep.w <- sapply(1:100,EpiEstim::DiscrSI,strep.w.mean,strep.w.sd)
+    ## Returns a discretised weibull distribution
+    discr.weib <- function(mean, sd) {
+        shape <- (sd/mean)^-1.086
+        scale <- mean/gamma(1+1/shape)
+        w <- dweibull(1:100,shape=shape,scale=scale)
+        return(w)
+    }
 
     label <- c("ebola" = "Ebola",
                "sars" = "SARS",
@@ -43,17 +27,26 @@ create.param <- function() {
                "klebs" = "Klebsiella",
                "strep" = "Streptococcus")
 
-    out <- list(
-        ebola = list(R0 = 5,0 , mut = 3.40e-6*(2/3) , seql = 18058   , w = ebola.w ),
-        sars  = list(R0 = 3.5 , mut = 1.14e-5*(2/3) , seql = 29750   , w = sars.w  ),
-        mers  = list(R0 = 3.5 , mut = 0.25e-5*(2/3) , seql = 30115   , w = mers.w  ),
-        ifz   = list(R0 = 1.3 , mut = 1.19e-5*(2/3) , seql = 13155   , w = ifz.w   ),
-        mrsa  = list(R0 = 1.3 , mut = 3.58e-9*(2/3) , seql = 2842618 , w = mrsa.w  ),
-        klebs = list(R0 = 2.0 , mut = 6.40e-9*(2/3) , seql = 5305677 , w = klebs.w ),
-        strep = list(R0 = 2.0 , mut = 5.44e-9*(2/3) , seql = 2126652 , w = strep.w ),
+    param <- list(
+        ebola = list(R0 = 5,0 , mut = 3.40e-6*(2/3) , seql = 18058   , w.mean = 15.3 , w.sd = 9.3 ),
+        sars  = list(R0 = 3.5 , mut = 1.14e-5*(2/3) , seql = 29750   , w.mean = 8.4  , w.sd = 3.8 ),
+        mers  = list(R0 = 3.5 , mut = 0.25e-5*(2/3) , seql = 30115   , w.mean = 10.7 , w.sd = 6.0 ),
+        ifz   = list(R0 = 1.3 , mut = 1.19e-5*(2/3) , seql = 13155   , w.mean = 3.0  , w.sd = 1.5 ),
+        mrsa  = list(R0 = 1.3 , mut = 3.58e-9*(2/3) , seql = 2842618 , w.mean = 15.6 , w.sd = 10.0),
+        klebs = list(R0 = 2.0 , mut = 6.40e-9*(2/3) , seql = 5305677 , w.mean = 62.7 , w.sd = 24.0),
+        strep = list(R0 = 2.0 , mut = 5.44e-9*(2/3) , seql = 2126652 , w.mean = 6.6  , w.sd = 1.8 ),
         const = list(n.hosts = 200 , dur = 500 , imp = 0.05 , min.n = 50),
         label = label
     )
+
+    ## Calculate discretised distributions from the mean and standard deviations
+    for(pathogen in names(label)) {
+        par <- param[[pathogen]]
+        if(pathogen=="sars") param[[pathogen]]$w <- discr.weib(par$w.mean, par$w.sd)
+        else param[[pathogen]]$w <- discr.gamma(par$w.mean, par$w.sd)
+    }
+
+    return(param)
 
 }
 
@@ -164,6 +157,37 @@ create.store <- function(obj,bundle.name,dir,load=FALSE,dl=TRUE) {
     return(store)
 }
 
+## Create a table of parameter values for .Rmd
+create.param.table <- function(store) {
+
+    ## A function for quick accessing of parameter values
+    access <- function(pathogen,factor) param[[pathogen]][[factor]]
+
+    param <- create.param()
+
+    ## Use consistent ordering of pathogen names throughout
+    paths <- sort.gensig(store)
+
+    df <- data.frame(matrix(nrow = length(paths), ncol = 6))
+    names(df) <- c("path","R0","mut","seql","w.mean","w.sd")
+
+    ## Access parameter values from param and fill them into df
+    df$path <- param$label[paths]
+    for(factor in names(df)[2:6]) df[[factor]] <- sapply(paths, access, factor)
+
+    ## Calculate the expected genetic signature
+    df$prod <- sapply(seq_along(df$path), function(i) df$mut[i] * df$seql[i] * df$w.mean[i])
+    df$prod <- round(df$prod, 2)
+
+    names(df) <- c("Pathogen", "R0",
+                   "Mutation rate<br>(base<sup>-1</sup> day<sup>-1</sup>)",
+                   "Genome length", "Mean generation time (days)",
+                   "SD generation time (days)","Expected genetic signature")
+
+    return(df)
+
+}
+
 
 #===== Analyse results ======#
 
@@ -181,13 +205,14 @@ sort.gensig <- function(store) {
 ## Plot generation time distributions
 plot.w <- function(param) {
 
-    names <- names(param)[-which(names(param)=="const")]
+    names <- names(param)[-which(names(param) %in% c("const","label"))]
 
     df <- data.frame(days=seq_along(param[[names[1]]]$w))
 
     for(i in names) df[[i]] <- param[[i]]$w
 
     mlt <- reshape2::melt(df,id="days")
+    mlt$variable <- factor(mlt$variable, levels = sort.gensig(store))
 
     p <- ggplot(mlt,aes(days,value,colour=variable)) + geom_line(size=1.5) +
         labs(title = "Generation Times",
@@ -231,10 +256,7 @@ plot.mean <- function(store) {
     df$Pathogen <- factor(df$Pathogen,levels=sort.gensig(store))
 
     p <- ggplot(df,aes(Pathogen,mean,fill=Pathogen)) +
-        geom_bar(stat='identity') +
-
-
+        geom_bar(stat='identity')
     p
 
 }
-
