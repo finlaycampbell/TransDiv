@@ -1,7 +1,3 @@
-###### CALCULATING GENETIC SIGNATURES OF TRANSMISSION #######
-
-#===== Setting up the run ======#
-
 ## Describe pathogen parameters
 create.param <- function() {
 
@@ -35,14 +31,6 @@ create.param <- function() {
     strep.w.sd <- 1.8
     strep.w <- sapply(1:100,EpiEstim::DiscrSI,strep.w.mean,strep.w.sd)
 
-    label <- c("ebola" = "Ebola",
-               "sars" = "SARS",
-               "mers" = "MERS",
-               "ifz" = "Influenza",
-               "mrsa" = "MRSA",
-               "klebs" = "Klebsiella",
-               "strep" = "Streptococcus")
-
     out <- list(
         ebola = list(R0 = 5,0 , mut = 3.40e-6*(2/3) , seql = 18058   , w = ebola.w ),
         sars  = list(R0 = 3.5 , mut = 1.14e-5*(2/3) , seql = 29750   , w = sars.w  ),
@@ -51,8 +39,7 @@ create.param <- function() {
         mrsa  = list(R0 = 1.3 , mut = 3.58e-9*(2/3) , seql = 2842618 , w = mrsa.w  ),
         klebs = list(R0 = 2.0 , mut = 6.40e-9*(2/3) , seql = 5305677 , w = klebs.w ),
         strep = list(R0 = 2.0 , mut = 5.44e-9*(2/3) , seql = 2126652 , w = strep.w ),
-        const = list(n.hosts = 200 , dur = 500 , imp = 0.05 , min.n = 50),
-        label = label
+        const = list(n.hosts = 200 , dur = 500 , imp = 0.05 , min.n = 50)
     )
 
 }
@@ -97,7 +84,54 @@ create.calc.gensig <- function(sim) {
 
 }
 
-## Return a vector of realised gensig values for a given disease
+## Create a histogram of gensig values
+plot.bar <- function(df) {
+
+    dis.names <- c("ebola" = "Ebola",
+                   "sars" = "SARS",
+                   "mers" = "MERS",
+                   "ifz" = "Influenza",
+                   "mrsa" = "MRSA",
+                   "klebs" = "Klebsiella",
+                   "strep" = "Streptococcus")
+
+    ## Calculate proportions manually
+    df <- by(df$gensig,df$disease,function(sig) prop.table(table(sig)))
+
+    ## Collapse the list of dataframes into a single dataframe
+    df <- plyr::ldply(df,data.frame)
+
+    p <- ggplot(df,aes(x = sig, y = Freq, fill = .id, colour = .id)) +
+        geom_bar(stat = "identity") +
+        facet_wrap( ~ .id,labeller = as_labeller(dis.names)) +
+        theme(legend.position = "none") +
+        labs(title = "Genetic signatures",x = "Number of mutations", y = "Proportion")
+    p
+
+}
+
+## Plot generation time distributions
+plot.w <- function(param) {
+
+    names <- names(param)[-which(names(param)=="const")]
+
+    df <- data.frame(days=seq_along(param[[names[1]]]$w))
+
+    for(i in names) df[[i]] <- param[[i]]$w
+
+    mlt <- reshape2::melt(df,id="days")
+
+    p <- ggplot(mlt,aes(days,value,colour=variable)) + geom_line(size=1.5) +
+        labs(title = "Generation Times",
+             subtitle = "Generation times of various pathogens",
+             x = "Days",
+             y = "Density")
+
+    return(p)
+
+}
+
+## Return a vector of realised gensig values
 run.gensig <- function(disease) {
 
     ## Create list of epidemiological parameters
@@ -125,8 +159,8 @@ run.gensig <- function(disease) {
 
 }
 
-## run.gensig over the various pathogens
-path.gensig <- function(param) {
+## Run gensig over the pathogens provided in create.param
+path.gensig <- function() {
 
     param <- create.param()
 
@@ -139,102 +173,3 @@ path.gensig <- function(param) {
     return(df)
 
 }
-
-
-#====== Collect cluster results =====#
-
-## Create a storage vector for gensig values
-create.store <- function(obj,bundle.name,dir,load=FALSE,dl=TRUE) {
-
-    if(load) load(paste0(dir,"store.RData"))
-    else store <- NULL
-
-    if(dl) {
-        task_bundle <- obj$task_bundle_get(bundle.name)
-        ids <- task_bundle$ids
-        pb <- txtProgressBar(min=1,max=length(ids),style=3)
-        for(i in seq_along(ids)){
-            setTxtProgressBar(pb,i)
-            task <- obj$task_get(ids[i])
-            r <- task$result()
-            store <- rbind(store,r)
-        }
-    }
-
-    return(store)
-}
-
-
-#===== Analyse results ======#
-
-## Returns a vector of pathogen names ordered by mean genetic signature (high to low)
-sort.gensig <- function(store) {
-
-    means <- by(store$gensig,store$disease,mean)
-    return(names(sort(-means)))
-
-}
-
-
-#===== Plot results =====#
-
-## Plot generation time distributions
-plot.w <- function(param) {
-
-    names <- names(param)[-which(names(param)=="const")]
-
-    df <- data.frame(days=seq_along(param[[names[1]]]$w))
-
-    for(i in names) df[[i]] <- param[[i]]$w
-
-    mlt <- reshape2::melt(df,id="days")
-
-    p <- ggplot(mlt,aes(days,value,colour=variable)) + geom_line(size=1.5) +
-        labs(title = "Generation Times",
-             subtitle = "Generation times of various pathogens",
-             x = "Days",
-             y = "Density")
-
-    return(p)
-
-}
-
-## Create a bar chart of gensig distributions
-plot.dist <- function(store) {
-
-    ## Create param to access labeller
-    param <- create.param()
-
-    ## Calculate proportions manually
-    df <- by(store$gensig, store$disease, function(sig) prop.table(table(sig)))
-
-    ## Collapse the list of dataframes into a single dataframe
-    df <- plyr::ldply(df, data.frame)
-
-    ## Sort the pathogen names by mean gensig
-    df$.id <- factor(df$.id, levels = sort.gensig(store))
-
-    p <- ggplot(df,aes(x = sig, y = Freq, fill = .id, colour = .id)) +
-        geom_bar(stat = "identity") +
-        facet_wrap( ~ .id,labeller = as_labeller(param$label)) +
-        theme(legend.position = "none") +
-        labs(title = "Genetic signatures", x = "Number of mutations", y = "Proportion")
-    p
-
-}
-
-## Plot a bar chart of mean values
-plot.mean <- function(store) {
-
-    df <- plyr::ldply(by(store$gensig,store$disease,mean),data.frame)
-    names(df) <- c("Pathogen","mean")
-    df$Pathogen <- factor(df$Pathogen,levels=sort.gensig(store))
-
-    p <- ggplot(df,aes(Pathogen,mean,fill=Pathogen)) +
-        geom_bar(stat='identity') +
-
-
-    p
-
-}
-
