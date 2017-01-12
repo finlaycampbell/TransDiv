@@ -25,13 +25,13 @@ obj <- didewin::queue_didewin(ctx)
 
 #===== Sending off the tasks =====#
 
-param <- data.frame(run = 1:10)
+param <- data.frame(run = 1:20)
 
 grp <- queuer::enqueue_bulk(obj, param, path.gensig, do.call=FALSE, timeout=0)
 
 
 #====== Checking the status ======#
-bundle.name <- 'congregational_allosaurus'
+bundle.name <- 'automatic_cran'
 bundle <- obj$task_bundle_get(bundle.name)
 bundle$status()
 

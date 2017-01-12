@@ -168,21 +168,32 @@ create.param.table <- function(store) {
     ## Use consistent ordering of pathogen names throughout
     paths <- sort.gensig(store)
 
-    df <- data.frame(matrix(nrow = length(paths), ncol = 6))
-    names(df) <- c("path","R0","mut","seql","w.mean","w.sd")
+    df <- data.frame(matrix(nrow = length(paths), ncol = 4))
+    names(df) <- c("path","R0","mut","seql")
 
     ## Access parameter values from param and fill them into df
     df$path <- param$label[paths]
-    for(factor in names(df)[2:6]) df[[factor]] <- sapply(paths, access, factor)
+
+    ## Fill in R0, mut and seql
+    for(factor in names(df)[2:4])
+        df[[factor]] <- sapply(paths, access, factor)
+
+    ## Insert the generation time information in format: mean (sd)
+    df$w <- sapply(paths, function(path)
+        paste0(access(path,"w.mean"), " (",access(path,"w.sd"),")"))
 
     ## Calculate the expected genetic signature
-    df$prod <- sapply(seq_along(df$path), function(i) df$mut[i] * df$seql[i] * df$w.mean[i])
-    df$prod <- round(df$prod, 2)
+    #df$prod <- sapply(paths, function(path)
+    #    round(access(path, "mut") * access(path, "seql") * access(path, "w.mean"), 2))
 
-    names(df) <- c("Pathogen", "R0",
+    df$mut <- format(df$mut, digits = 3, scientific = TRUE)
+    df$seql <- format(df$seql, digits = 3, scientific = TRUE)
+
+    names(df) <- c("Pathogen",
+                   "R0<br>",
                    "Mutation rate<br>(base<sup>-1</sup> day<sup>-1</sup>)",
-                   "Genome length", "Mean generation time (days)",
-                   "SD generation time (days)","Expected genetic signature")
+                   "Genome length<br> (bases)",
+                   "Generation time (SD)<br>(days) ")
 
     return(df)
 
