@@ -11,7 +11,10 @@ Imports:
     ggplot2,
     outbreaker,
     reshape2,
-    EpiEstim
+    EpiEstim,
+    plyr,
+    stats,
+    ape
 License: GPL (>=2)
 Encoding: UTF-8
 LazyData: true

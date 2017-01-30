@@ -2,12 +2,15 @@
 ##'
 ##' @export
 ##'
+##' @param store A gensig output dataframe
+##' @param param A gensig param list
+##'
 ##' @importFrom ggplot2 ggplot
 ##' @importFrom ggplot2 geom_line
 ##' @importFrom ggplot2 labs
-##' @importFrom ggplot2 aes
+##' @importFrom ggplot2 aes_string
 
-plot.w <- function(param = create.param()) {
+vis.w <- function(store, param = create.param()) {
 
     names <- names(param)
 
@@ -18,7 +21,7 @@ plot.w <- function(param = create.param()) {
     mlt <- reshape2::melt(df, id="days")
     mlt$variable <- factor(mlt$variable, levels = sort.gensig(store))
 
-    p <- ggplot(mlt, aes(days, value, colour = variable)) + geom_line(size = 1.5) +
+    p <- ggplot(mlt, aes_string('days', 'value', colour = 'variable')) + geom_line(size = 1.5) +
         labs(title = "Generation Times",
              subtitle = "Generation times of various pathogens",
              x = "Days",
@@ -35,15 +38,20 @@ plot.w <- function(param = create.param()) {
 ##'
 ##' @export
 ##'
+##' @aliases vis.dist
+##'
+##' @param store A gensig output dataframe
+##' @param config A gensig config list
+##'
 ##' @importFrom ggplot2 ggplot
 ##' @importFrom ggplot2 labs
-##' @importFrom ggplot2 aes
+##' @importFrom ggplot2 aes_string
 ##' @importFrom ggplot2 geom_bar
 ##' @importFrom ggplot2 facet_wrap
 ##' @importFrom ggplot2 theme
 ##' @importFrom ggplot2 as_labeller
 
-plot.dist <- function(store, config = create.config()) {
+vis.dist <- function(store, config = create.config()) {
 
     ## Calculate proportions manually
     df <- by(store$gensig, store$disease, function(sig) prop.table(table(sig)))
@@ -54,7 +62,7 @@ plot.dist <- function(store, config = create.config()) {
     ## Sort the pathogen names by mean gensig
     df$.id <- factor(df$.id, levels = sort.gensig(store))
 
-    p <- ggplot(df, aes(x = sig, y = Freq, fill = .id, colour = .id)) +
+    p <- ggplot(df, aes_string(x = 'sig', y = 'Freq', fill = '.id', colour = '.id')) +
         geom_bar(stat = "identity") +
         facet_wrap( ~ .id,labeller = as_labeller(config$label)) +
         theme(legend.position = "none") +
@@ -70,17 +78,19 @@ plot.dist <- function(store, config = create.config()) {
 ##'
 ##' @export
 ##'
+##' @param store A gensig output dataframe
+##'
 ##' @importFrom ggplot2 ggplot
-##' @importFrom ggplot2 aes
+##' @importFrom ggplot2 aes_string
 ##' @importFrom ggplot2 geom_bar
 
-plot.mean <- function(store) {
+vis.mean <- function(store) {
 
-    df <- plyr::ldply(by(store$gensig,store$disease,mean),data.frame)
-    names(df) <- c("Pathogen","mean")
+    df <- plyr::ldply(by(store$gensig, store$disease, mean), data.frame)
+    names(df) <- c("Pathogen", "mean")
     df$Pathogen <- factor(df$Pathogen, levels = sort.gensig(store))
 
-    p <- ggplot(df,aes(Pathogen, mean, fill = Pathogen)) +
+    p <- ggplot(df, aes_string('Pathogen', 'mean', fill = 'Pathogen')) +
         geom_bar(stat='identity')
     p
 

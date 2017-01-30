@@ -23,7 +23,7 @@ pairs per pathogen determined.
 }
 \examples{
 ## visualise distribution
-plot.dist(store)
+vis.dist(store)
 
 }
 \keyword{datasets}
