@@ -123,7 +123,7 @@ path.gensig <- function(param) {
 
     param <- create.param()
 
-    names <- names(param)[-which(names(param)=="const")]
+    names <- names(param)[-which(names(param) %in% c("const","label"))]
 
     df <- reshape2::melt(sapply(names,run.gensig))
 

@@ -31,10 +31,10 @@ grp <- queuer::enqueue_bulk(obj, param, path.gensig, do.call=FALSE, timeout=0)
 
 
 #====== Checking the status ======#
-bundle.name <- 'automatic_cran'
+bundle.name <- 'brimstone_blueandgoldmackaw'
 bundle <- obj$task_bundle_get(bundle.name)
 bundle$status()
 
 #===== Accessing runs on the cluster  =====#
 dir <- "C:\\Users\\Finlay\\OneDrive - Imperial College London\\R\\gensig\\output\\"
-store <- create.store(obj,bundle.name,dir,load=FALSE,dl=TRUE)
+store <- create.store(obj,bundle.name,dir,load=TRUE,dl=TRUE)
