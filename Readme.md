@@ -26,9 +26,15 @@ We simulated outbreaks and pathogen sequence evolution using the following
 parameters:
 
 
-```
-## Error in round(access(path, "w.sd"), ")"): non-numeric argument to mathematical function
-```
+|Pathogen      | R0<br>|Mutation rate<br>(base<sup>-1</sup> day<sup>-1</sup>) |Genome length<br> (bases) |Generation time (SD)<br>(days)  | E(gensig)|
+|:-------------|------:|:-----------------------------------------------------|:-------------------------|:-------------------------------|---------:|
+|SARS          |    3.5|7.60e-06                                              |2.98e+04                  |8.4 (3.8)                       |      1.90|
+|Klebsiella    |    2.0|4.27e-09                                              |5.31e+06                  |62.7 (24)                       |      1.42|
+|Ebola         |    5.0|2.27e-06                                              |1.81e+04                  |15.3 (9.3)                      |      0.63|
+|MERS          |    3.5|1.67e-06                                              |3.01e+04                  |10.7 (6)                        |      0.54|
+|Influenza     |    1.3|7.93e-06                                              |1.32e+04                  |3 (1.5)                         |      0.31|
+|MRSA          |    1.3|2.39e-09                                              |2.84e+06                  |15.6 (10)                       |      0.11|
+|Streptococcus |    2.0|3.63e-09                                              |2.13e+06                  |6.6 (1.8)                       |      0.05|
 
 <br>
 The distributions of realised generation times are given below.

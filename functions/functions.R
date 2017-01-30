@@ -181,7 +181,7 @@ create.param.table <- function(store) {
     ## Insert the generation time information in format: mean (sd)
     df$w <- sapply(paths, function(path)
         paste0(round(access(path,"w.mean"), 1), " (",
-               round(access(path,"w.sd"),")"), 1))
+               round(access(path,"w.sd"), 1), ")"))
 
     ## Calculate the expected genetic signature
     df$prod <- sapply(paths, function(path)
@@ -189,7 +189,6 @@ create.param.table <- function(store) {
 
     df$mut <- format(df$mut, digits = 3, scientific = TRUE)
     df$seql <- format(df$seql, digits = 3, scientific = TRUE)
-    df$
 
     names(df) <- c("Pathogen",
                    "R0<br>",
