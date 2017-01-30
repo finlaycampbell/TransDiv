@@ -4,12 +4,12 @@
 ##' @author Finlay Campbell <f.campbell15@@imperial.ac.uk>
 ##'
 ##' @return Returns a dataframe of two columns
+##'
 ##' @export
 ##'
 ##' @param param a list of lists describing the parameter values for each pathogen of interest
 ##' @param config an optional list of parameter values for the run
 
-## run.gensig over the various pathogens
 gensig <- function(param = NULL, config = NULL) {
 
     param <- create.param(param)
