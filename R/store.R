@@ -8,10 +8,12 @@
 #'
 #' @docType data
 #'
-#' @format A data frame with 32898 rows and 2 columns
+#' @format {
+#' A data frame with 32898 rows and 2 columns
 #' \describe{
 #'   \item{disease}{Disease}
 #'   \item{gensig}{Genetic signature of a single transmission event}
+#' }
 #' }
 #'
 #' @rdname store
