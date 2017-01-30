@@ -2,11 +2,11 @@
 % Please edit documentation in R/plot.R
 \name{plot.w}
 \alias{plot.w}
-\title{Visualise distributions of genetic signatures}
+\title{Visualise distributions of generation times}
 \usage{
-\method{plot}{w}(param)
+\method{plot}{w}(param = create.param())
 }
 \description{
-Visualise distributions of genetic signatures
+Visualise distributions of generation times
 }
 

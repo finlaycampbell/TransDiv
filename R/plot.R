@@ -1,26 +1,24 @@
-##' Visualise distributions of genetic signatures
+##' Visualise distributions of generation times
+##'
+##' @export
 ##'
 ##' @importFrom ggplot2 ggplot
 ##' @importFrom ggplot2 geom_line
 ##' @importFrom ggplot2 labs
 ##' @importFrom ggplot2 aes
-##' @importFrom ggplot2 geom_bar
-##' @importFrom ggplot2 facet_wrap
-##' @importFrom ggplot2 theme
-##' @importFrom ggplot2 as_labeller
 
-plot.w <- function(param) {
+plot.w <- function(param = create.param()) {
 
     names <- names(param)
 
-    df <- data.frame(days=seq_along(param[[names[1]]]$w))
+    df <- data.frame(days = seq_along(param[[names[1]]]$w))
 
     for(i in names) df[[i]] <- param[[i]]$w
 
-    mlt <- reshape2::melt(df,id="days")
+    mlt <- reshape2::melt(df, id="days")
     mlt$variable <- factor(mlt$variable, levels = sort.gensig(store))
 
-    p <- ggplot(mlt,aes(days,value,colour=variable)) + geom_line(size=1.5) +
+    p <- ggplot(mlt, aes(days, value, colour = variable)) + geom_line(size = 1.5) +
         labs(title = "Generation Times",
              subtitle = "Generation times of various pathogens",
              x = "Days",
@@ -30,11 +28,22 @@ plot.w <- function(param) {
 
 }
 
-## Create a bar chart of gensig distributions
-plot.dist <- function(store, config = NULL) {
 
-    ## Create config to access labeller
-    if(is.null(config)) config <- create.config()
+
+
+##' Visualise distributions of genetic signatures
+##'
+##' @export
+##'
+##' @importFrom ggplot2 ggplot
+##' @importFrom ggplot2 labs
+##' @importFrom ggplot2 aes
+##' @importFrom ggplot2 geom_bar
+##' @importFrom ggplot2 facet_wrap
+##' @importFrom ggplot2 theme
+##' @importFrom ggplot2 as_labeller
+
+plot.dist <- function(store, config = create.config()) {
 
     ## Calculate proportions manually
     df <- by(store$gensig, store$disease, function(sig) prop.table(table(sig)))
@@ -54,14 +63,24 @@ plot.dist <- function(store, config = NULL) {
 
 }
 
-## Plot a bar chart of mean values
+
+
+
+##' Compare mean genetic signatures between pathogens
+##'
+##' @export
+##'
+##' @importFrom ggplot2 ggplot
+##' @importFrom ggplot2 aes
+##' @importFrom ggplot2 geom_bar
+
 plot.mean <- function(store) {
 
     df <- plyr::ldply(by(store$gensig,store$disease,mean),data.frame)
     names(df) <- c("Pathogen","mean")
-    df$Pathogen <- factor(df$Pathogen,levels=sort.gensig(store))
+    df$Pathogen <- factor(df$Pathogen, levels = sort.gensig(store))
 
-    p <- ggplot(df,aes(Pathogen,mean,fill=Pathogen)) +
+    p <- ggplot(df,aes(Pathogen, mean, fill = Pathogen)) +
         geom_bar(stat='identity')
     p
 
