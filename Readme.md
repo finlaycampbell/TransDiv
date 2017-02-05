@@ -38,7 +38,7 @@ parameters:
 
 <br>
 The distributions of realised generation times are given below.
-![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-1.png)
+![plot of chunk unnamed-chunk-2](C:/Users/Finlay/OneDrive - Imperial College London/R/gensig/figure/unnamed-chunk-2-1.png)
 
 
 ### Contact

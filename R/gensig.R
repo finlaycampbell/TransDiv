@@ -16,20 +16,18 @@ gensig <- function(param = NULL, config = NULL) {
 
     config <- create.config(config)
 
-    store <- data.frame(disease = character(), gensig = numeric())
+    store <- list()
 
     for(disease in names(param)) {
 
         sim <- run.sim(disease, param, config)
 
-        gensig <- get.gensig(sim)
+        store[[disease]][["sim"]] <- sim
 
-        tmp <- data.frame(disease = disease, gensig = gensig)
-
-        store <- rbind(store, tmp)
+        store[[disease]][["gensig"]] <- get.gensig(sim)
 
     }
 
-    return(store)
+    return(list(param = param, config = config, store = store))
 
 }
