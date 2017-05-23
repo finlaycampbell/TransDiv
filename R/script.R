@@ -2,7 +2,8 @@
 
 #===== Loading libraries and functions =====#
 libs <- c('ggplot2', 'reshape2', 'scales', 'gensig', 'plyr', 'dplyr', 'magrittr',
-          'tidyr', 'ggrepel', 'lazyeval', 'nls2', 'ape', 'vegan')
+          'tidyr', 'ggrepel', 'lazyeval', 'nls2', 'ape', 'vegan', 'outbreaker', 
+          'outbreaker2')
 lapply(libs, require, character.only = TRUE)
 
 source("R/internals.R")
