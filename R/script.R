@@ -2,9 +2,10 @@
 
 #===== Loading libraries and functions =====#
 libs <- c('ggplot2', 'reshape2', 'scales', 'gensig', 'plyr', 'dplyr', 'magrittr',
-          'tidyr', 'ggrepel', 'lazyeval', 'nls2', 'ape', 'vegan', 'outbreaker', 
-          'outbreaker2')
+          'tidyr', 'ggrepel', 'lazyeval', 'nls2', 'ape', 'vegan', 'outbreaker',
+          'EpiEstim')
 lapply(libs, require, character.only = TRUE)
+if(!require('outbreaker2')) devtools::install_github('reconhub/outbreaker2')
 
 source("R/internals.R")
 source("R/plots.R")
