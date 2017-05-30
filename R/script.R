@@ -11,6 +11,8 @@ source("R/plots.R")
 #===== Use the data from the manuscript ======#
 store <- create.store(dir = 'data/')
 
+#===== OR =====#
+
 #===== Run the simulations yourself =====#
 param <- cluster.param()
 for(i in nrow(param)) {
