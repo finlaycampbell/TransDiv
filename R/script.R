@@ -1,7 +1,7 @@
 #===== TransDiv =====#
 
 #===== Loading libraries and functions =====#
-libs <- c('ggplot2', 'reshape2', 'scales', 'gensig', 'plyr', 'dplyr', 'magrittr',
+libs <- c('ggplot2', 'reshape2', 'scales', 'plyr', 'dplyr', 'magrittr',
           'tidyr', 'ggrepel', 'lazyeval', 'nls2', 'ape', 'vegan', 'outbreaker',
           'EpiEstim')
 lapply(libs, require, character.only = TRUE)
