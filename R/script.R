@@ -6,7 +6,6 @@ load.libs()
 ##===== Use the data from the manuscript ======##
 load.store()
 
-
 ##===== Or run the simulations yourself =====##
 ## This will take a long time - reduce the number of runs
 pathogens <- names(pathogens.param())
