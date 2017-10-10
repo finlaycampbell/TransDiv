@@ -35,14 +35,6 @@ load.store <- function() {
 ##===== Define parameters, set up run =====##
 
 ## Set up parameters for cluster run
-configure.runs <- function() {
-  diseases <- names(pathogens.param())
-  param <- data.frame(disease = diseases,
-                      runs = 100,
-                      stringsAsFactors = FALSE)
-  return(param)
-}
-
 ## Describe epidemiological parameters of diseases
 pathogens.param <- function(param = NULL) {
   
@@ -406,13 +398,9 @@ create.store <- function(dir, mod = 'ob') {
     adder <- add_r
   } else if(mod == 'phyb') {
     adder <- add_phyb_r
-  } else if(mod == 'o.p') {
-    adder <- add_o_p_r
   }
   
-  pb <- txtProgressBar(min = 1, max = length(files), style = 3)
   for(i in seq_along(files)) {
-    setTxtProgressBar(pb, i)
     load(paste0(dir, files[i]))
     store <- adder(store, r)
   }
