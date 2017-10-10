@@ -1,38 +1,32 @@
-#===== TransDiv =====#
-
-#===== Loading libraries and functions =====#
-libs <- c('ggplot2', 'reshape2', 'scales', 'gensig', 'plyr', 'dplyr', 'magrittr',
-          'tidyr', 'ggrepel', 'lazyeval', 'nls2', 'ape', 'vegan', 'outbreaker',
-          'EpiEstim')
-lapply(libs, require, character.only = TRUE)
-if(!require('outbreaker2')) devtools::install_github('reconhub/outbreaker2')
-
+##===== TransDiv =====##
 source("R/internals.R")
 source("R/plots.R")
+load.libs()
 
-#===== Use the data from the manuscript ======#
-store <- create.store(dir = 'data/')
+##===== Use the data from the manuscript ======##
+load.store()
 
-#===== OR =====#
 
-#===== Run the simulations yourself =====#
-param <- cluster.param()
-for(i in nrow(param)) {
-    r <- run.cluster(param[i,])
-    save(r, file = paste0('output/store_', i, '.RData'))
+##===== Or run the simulations yourself =====##
+## This will take a long time - reduce the number of runs
+pathogens <- names(pathogens.param())
+for(i in seq_along(pathogens)) {
+
+  # Run the analysis using the outbreak model
+  r <- run.analysis(pathogens[i], runs = 100)
+  save(r, file = paste0('output/outbreaker/run_', i, '.RData'))
+
+  # Run the analysis using the phybreak model
+  r <- run.phyb.analysis(pathogens[i], runs = 100)
+  save(r, file = paste0('output/phybreak/run_', i, '.RData'))
+  
 }
 
-store <- create.store(dir = 'output/')
+## Extract results from simulation data
+o.store <- create.store(dir = 'output/outbreaker/', mod = 'ob')
+p.store <- create.store(dir = 'output/phybreak/', mod = 'phyb')
 
-#===== Create figures =====#
-## Fig. 1A
-vis.gensig(store)
-
-## Fig. 1B
-vis.prop(store)
-
-## Fig. 2
-vis.rel(store)
-
-## Fig. 3
-vis.atleast(store)
+##===== Create figures =====##
+## These will be saved to the /figs folder
+## See R/plots.R for code
+create.figs()
