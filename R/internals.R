@@ -43,7 +43,6 @@ pathogens.param <- function(param = NULL) {
     sars  = list(R0 = 2.7 , mut = 1.14e-5 , seql = 29714   , w.mean = 8.7  , w.sd = 3.6,  dist = "gamma" ),
     mers  = list(R0 = 1.2 , mut = 0.25e-5 , seql = 30115   , w.mean = 10.7 , w.sd = 6.0,  dist = "gamma" ),
     ifz   = list(R0 = 1.5 , mut = 1.19e-5 , seql = 13155   , w.mean = 3.0  , w.sd = 1.5,  dist = "gamma" ),
-    ##ifz.h = list(R0 = 1.5 , mut = 1.09e-5 , seql = 1701    , w.mean = 3.0  , w.sd = 1.5,  dist = "gamma" ),
     mrsa  = list(R0 = 1.3 , mut = 5.21e-9 , seql = 2842618 , w.mean = 15.6 , w.sd = 10.0, dist = "gamma" ),
     klebs = list(R0 = 2.0 , mut = 6.30e-9 , seql = 5305677 , w.mean = 62.7 , w.sd = 24.0, dist = "gamma" ),
     strep = list(R0 = 1.4 , mut = 5.44e-9 , seql = 2126652 , w.mean = 6.6  , w.sd = 1.8 , dist = "gamma" ),
