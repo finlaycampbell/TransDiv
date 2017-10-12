@@ -22,9 +22,8 @@ load.libs <- function() {
 ## Load results
 load.store <- function() {
 
-  dirs <- c('~/OneDrive/output/gensig/rev/phyb/', 
-            '~/OneDrive/output/gensig/rev/outb/',
-            '~/OneDrive/output/gensig/rev/o.p/')
+  dirs <- c('data/outbreaker/', 
+            'data/phybreak/')
 
   for(i in dirs) load(paste0(i, 'store.RData'), envir = .GlobalEnv)
 
