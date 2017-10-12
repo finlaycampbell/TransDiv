@@ -22,8 +22,8 @@ load.libs <- function() {
 ## Load results
 load.store <- function() {
 
-  dirs <- c('data/outbreaker/', 
-            'data/phybreak/')
+  dirs <- c('../data/outbreaker/', 
+            '../data/phybreak/')
 
   for(i in dirs) load(paste0(i, 'store.RData'), envir = .GlobalEnv)
 

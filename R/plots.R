@@ -210,8 +210,7 @@ vis.raw.ent <- function(o.store, p.store, alpha = 0.2) {
 vis.save <- function(p, name, ext = 'svg', dpi = 250,
                      width = 15, height = 10, ...) {
 
-  ggsave(paste0("figs/",
-                name, ".", ext),
+  ggsave(paste0("../figs/", name, ".", ext),
          p, dpi = dpi, width = width, height = height,
          ...)
 }
