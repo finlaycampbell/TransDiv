@@ -7,8 +7,10 @@ load.libs()
 load.store()
 
 ##===== Or run the simulations yourself =====##
-## This will take a long time - reduce the number of runs
+## This will take a long time on a single desktop computer -
+## reduce the number of runs if necessary
 pathogens <- names(pathogens.param())
+
 for(i in seq_along(pathogens)) {
 
   # Run the analysis using the outbreak model
@@ -26,6 +28,5 @@ o.store <- create.store(dir = 'output/outbreaker/', mod = 'ob')
 p.store <- create.store(dir = 'output/phybreak/', mod = 'phyb')
 
 ##===== Create figures =====##
-## These will be saved to the /figs folder
-## See R/plots.R for code
+## These will be saved to the /figs folder - see R/plots.R for code
 create.figs()
