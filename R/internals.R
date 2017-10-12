@@ -377,9 +377,6 @@ get.phyb.w <- function(sim) {
 ## Create a storage vector for gensig values
 create.store <- function(dir, mod = 'ob') {
 
-  cur.wd <- getwd()
-  on.exit(setwd(cur.wd))
-
   store <- list(gensig = data.frame(disease = character(),
                                     gensig = numeric(),
                                     dat = character()),
@@ -516,7 +513,7 @@ discr.gamma <- function(mean, sd) {
   return(w)
 }
 
-## Returns a discretised weibull distribution
+## Returns a weibull distribution
 discr.weib <- function(mean, sd) {
   shape <- (sd/mean)^-1.086
   scale <- mean/gamma(1+1/shape)
