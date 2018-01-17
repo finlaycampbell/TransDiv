@@ -38,16 +38,17 @@ load.store <- function() {
 pathogens.param <- function(param = NULL) {
   
   param <- list(
-    ebola = list(R0 = 1.8 , mut = 3.10e-6 , seql = 18958   , w.mean = 14.4 , w.sd = 8.9,  dist = "gamma" ),
-    sars  = list(R0 = 2.7 , mut = 1.14e-5 , seql = 29714   , w.mean = 8.7  , w.sd = 3.6,  dist = "gamma" ),
-    mers  = list(R0 = 1.2 , mut = 0.25e-5 , seql = 30115   , w.mean = 10.7 , w.sd = 6.0,  dist = "gamma" ),
-    ifz   = list(R0 = 1.5 , mut = 1.19e-5 , seql = 13155   , w.mean = 3.0  , w.sd = 1.5,  dist = "gamma" ),
-    mrsa  = list(R0 = 1.3 , mut = 5.21e-9 , seql = 2842618 , w.mean = 15.6 , w.sd = 10.0, dist = "gamma" ),
-    klebs = list(R0 = 2.0 , mut = 6.30e-9 , seql = 5305677 , w.mean = 62.7 , w.sd = 24.0, dist = "gamma" ),
-    strep = list(R0 = 1.4 , mut = 5.44e-9 , seql = 2126652 , w.mean = 6.6  , w.sd = 1.8 , dist = "gamma" ),
-    shig  = list(R0 = 1.1 , mut = 1.64e-9 , seql = 4825265 , w.mean = 7.0  , w.sd = 2   , dist = "gamma" ),
-    tb    = list(R0 = 1.8 , mut = 2.36e-10, seql = 4411621 , w.mean = 324  , w.sd = 385 , dist = "gamma" ),
-    cdif  = list(R0 = 1.5 , mut = 8.76e-10, seql = 4290252 , w.mean = 27.7 , w.sd = 14.9, dist = 'gamma' ))
+    ebola   = list(R0 = 1.8 , mut = 3.10e-6 , seql = 18958   , w.mean = 14.4 , w.sd = 8.9,  dist = "gamma" ),
+    sars    = list(R0 = 2.7 , mut = 1.14e-5 , seql = 29714   , w.mean = 8.7  , w.sd = 3.6,  dist = "gamma" ),
+    mers    = list(R0 = 1.2 , mut = 0.25e-5 , seql = 30115   , w.mean = 10.7 , w.sd = 6.0,  dist = "gamma" ),
+    ifz     = list(R0 = 1.5 , mut = 1.19e-5 , seql = 13155   , w.mean = 3.0  , w.sd = 1.5,  dist = "gamma" ),
+    mrsa    = list(R0 = 1.3 , mut = 5.21e-9 , seql = 2842618 , w.mean = 15.6 , w.sd = 10.0, dist = "gamma" ),
+    klebs   = list(R0 = 2.0 , mut = 6.30e-9 , seql = 5305677 , w.mean = 62.7 , w.sd = 24.0, dist = "gamma" ),
+    klebs_2 = list(R0 = 2.0 , mut = 6.30e-9 , seql = 5305677 , w.mean = 62.7 , w.sd = 24.0, dist = "gamma" ),
+    strep   = list(R0 = 1.4 , mut = 5.44e-9 , seql = 2126652 , w.mean = 6.6  , w.sd = 1.8 , dist = "gamma" ),
+    shig    = list(R0 = 1.1 , mut = 1.64e-9 , seql = 4825265 , w.mean = 7.0  , w.sd = 2   , dist = "gamma" ),
+    tb      = list(R0 = 1.8 , mut = 2.36e-10, seql = 4411621 , w.mean = 324  , w.sd = 385 , dist = "gamma" ),
+    cdif    = list(R0 = 1.5 , mut = 8.76e-10, seql = 4290252 , w.mean = 27.7 , w.sd = 14.9, dist = 'gamma' ))
 
   param$klebs$mut <- param$klebs$mut*7
   for(i in c("w.mean", "w.sd")) param$klebs[[i]] <- param$klebs[[i]]/7
@@ -102,7 +103,7 @@ run.analysis <- function(disease, runs) {
 
   config <- create.config()
   param <- pathogens.param()[[disease]]
-  
+
   param$w[param$w == 0] <- 1e-50
   param$disease <- disease
 
@@ -149,7 +150,7 @@ run.phyb.analysis <- function(disease, runs) {
 
   config <- create.config()
   param <- pathogens.param()[[disease]]
-  
+
   param$w[param$w == 0] <- 1e-50
   param$disease <- disease
 
@@ -493,12 +494,12 @@ calc.ent <- function(x) {
   return(-sum(log(fk)*fk))
 }
 
-## Calculate the proportion of cases with gensig > 0
+## Calculate the proportion of cases with transdiv > 0
 get.prop <- function(i) {
   mean(i > 0)
 }
 
-## Returns a vector of pathogen names ordered by mean genetic signature
+## Returns a vector of pathogen names ordered by mean transmission divergence
 sort.gensig <- function(store) {
 
   means <- by(store$gensig$gensig, store$gensig$disease, mean)

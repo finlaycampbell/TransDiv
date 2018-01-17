@@ -23,6 +23,9 @@ vis.gensig <- function(o.store, p.store, alpha = 0.5) {
 
   }
 
+  o.store <- rm.klebs_2(o.store)
+  p.store <- rm.klebs_2(p.store)
+  
   o.df <- mk.df(o.store)
   o.df$mod <- "ob"
 
@@ -69,6 +72,9 @@ vis.gensig <- function(o.store, p.store, alpha = 0.5) {
 ## Violin plot of prop for each pathogen for o and p
 vis.uniq <- function(o.store, p.store, alpha = 0.2) {
 
+  o.store <- rm.klebs_2(o.store)
+  p.store <- rm.klebs_2(p.store)
+  
   o.store$acc$uniq <- o.store$acc$uniq
   o.store$acc$disease <- factor(o.store$acc$disease, levels = rev(sort.gensig(o.store)))
   o.store$acc$mod <- 'ob'
@@ -97,9 +103,73 @@ vis.uniq <- function(o.store, p.store, alpha = 0.2) {
 
 } 
 
+## Violin plot of prop for each pathogen for o and p
+vis.uniq <- function(o.store, p.store, alpha = 1) {
+
+  o.df <- o.store$acc %>%
+    filter(disease == 'klebs_2') %>%
+    mutate(disease = replace(disease, disease == 'klebs_2', 'klebs'))
+  o.df$disease <- factor(o.df$disease, levels = 'klebs')
+  o.df$mod <- 'ob'
+
+  p.df <- p.store$acc %>%
+    filter(disease == 'klebs_2') %>%
+    mutate(disease = replace(disease, disease == 'klebs_2', 'klebs'))
+  p.df$disease <- factor(o.df$disease, levels = 'klebs')
+  p.df$mod <- 'phyb'
+
+  o.store$acc %<>% filter(disease != 'klebs_2')
+  o.store$acc$disease <- factor(o.store$acc$disease,
+                                levels = rev(sort.gensig(o.store)))
+  o.store$acc$mod <- 'ob'
+
+  p.store$acc %<>% filter(disease != 'klebs_2')
+  p.store$acc$disease <- factor(p.store$acc$disease,
+                                levels = rev(sort.gensig(p.store)))
+  p.store$acc$mod <- 'phyb'
+
+  df <- rbind(o.store$acc, p.store$acc)
+  df2 <- rbind(o.df, p.df)
+
+  ## Add empirical data
+  emp <- data.frame(disease = c('ebola', 'ebola', 'ebola','ebola', 'ebola',
+                                'tb', 'klebs', 'cdif', 'sars', 'ifz', 'mers',
+                                'tb'),
+                    uniq = c(31/77, 7/9, 22/24, 10/17, 0.55, 12/31, 11/18,
+                             93/333, 12/12, 2/6, 9/15, 15/38),
+                    data = c(77, 9, 24, 17, 127, 31, 18, 333, 12, 6, 15, 38))
+
+  df %>%
+    #filter(disease %in% dat$disease) %>%
+    ggplot(aes(x = 1, y = uniq)) +
+    geom_violin(aes(fill = mod, colour = mod), alpha = alpha, adjust = 1.5) +
+    geom_violin(data = df2, aes(fill = mod), alpha = 0.2, linetype = 3, adjust = 1.5) +
+    geom_point(data = emp, aes(x = 1, y = uniq, size = data), alpha = 0.7) +
+    geom_point(data = data.frame(disease = 'ebola', uniq = 0.55),
+               aes(x = 1, y = uniq), colour = 'grey', size = 8, alpha = 1) +
+    facet_wrap( ~ disease,
+               labeller = as_labeller(create.lab()),
+               ncol = length(unique(df$disease)),
+               strip.position = 'bottom') +
+    create.factheme() +
+    labs(y = create.axlab('uniq'), subtitle = 'B') +
+    scale_fill_manual(values = c('#7fc97f', '#beaed4')) +
+  scale_colour_manual(values = c('#7fc97f', '#beaed4')) +
+  scale_alpha_manual(values = c(0.5, 1)) +
+    scale_x_discrete(labels = as_labeller(create.lab())) +
+    scale_size_continuous(range = c(3, 15)) +
+    scale_y_continuous(breaks = seq(0, 1, 0.25),
+                       minor_breaks = seq(0, 1, 0.25/2))
+
+}
+
+
 ## vis.lm but facet_wrapped over ob and phyb
 vis.lm <- function(o.store, p.store, a, b, mod = 'exp', pol = 1,
-                        y.lim = NULL, mod2 = mod, lab = NULL) {
+                   y.lim = NULL, mod2 = mod, lab = NULL) {
+
+  o.store <- rm.klebs_2(o.store)
+  p.store <- rm.klebs_2(p.store)
   
   if(is.null(y.lim)) {
     if(b %in% c('gensig', 'ent', 'dna.ent', 'nodna.ent')) {
@@ -145,6 +215,9 @@ vis.lm <- function(o.store, p.store, a, b, mod = 'exp', pol = 1,
 ## Violin plot of prop for each pathogen for o and p
 vis.raw.acc <- function(o.store, p.store, alpha = 0.2) {
 
+  o.store <- rm.klebs_2(o.store)
+  p.store <- rm.klebs_2(p.store)
+  
   o.store$acc$disease <- factor(o.store$acc$disease, levels = rev(sort.gensig(o.store)))
   o.store$acc$mod <- 'ob'
   
@@ -175,6 +248,8 @@ vis.raw.acc <- function(o.store, p.store, alpha = 0.2) {
 ## Violin plot of prop for each pathogen for o and p
 vis.raw.ent <- function(o.store, p.store, alpha = 0.2) {
 
+
+  
   o.store$acc$disease <- factor(o.store$acc$disease, levels = rev(sort.gensig(o.store)))
   o.store$acc$mod <- 'ob'
   
@@ -335,16 +410,16 @@ create.lm <- function(store, a, b, mod, pol, mut) {
 ## A labeller for pathogen names
 create.lab <- function(input) {
 
-  c(ebola = "EBOV",
-    sars = "SARS-CoV",
-    mers = "MERS-CoV",
-    ifz = "Influenza A",
-    mrsa = "MRSA",
-    klebs = "K. pneumoniae",
-    strep = "S. pneumoniae",
-    shig = "S. sonnei",
-    tb = "M. tuberculosis",
-    cdif = "C. difficile")
+  c(ebola   = "EBOV",
+    sars    = "SARS-CoV",
+    mers    = "MERS-CoV",
+    ifz     = "Influenza A",
+    mrsa    = "MRSA",
+    klebs   = "K. pneumoniae",
+    strep   = "S. pneumoniae",
+    shig    = "S. sonnei",
+    tb      = "M. tuberculosis",
+    cdif    = "C. difficile")
 
 }
 
@@ -357,7 +432,7 @@ create.axlab <- function(input) {
                  nodna = 'Accuracy of outbreak reconstruction',
                  prop = 'Proportion of genetically distinct transmission pairs',
                  prop.id = 'Proportion of genetically identical transmission pairs',
-                 uniq = 'Number of unique sequences / outbreak size',
+                 uniq = '# unique sequences / # sequences',
                  dna.ent = 'Posterior entropy',
                  nodna.ent = 'Posterior entropy',
                  improv.ent = 'Change in posterior entropy')
@@ -473,6 +548,16 @@ joint.legend <- function(p1, p2, pos = 'bottom') {
 
     return(p)
 
+}
+
+## Remove the re-run of the K. pneumoniae (only plotted in Figure 1B)
+rm.klebs_2 <- function(store){
+
+  store$acc <- filter(store$acc, disease != 'klebs_2')
+  store$gensig <- filter(store$gensig, disease != 'klebs_2')
+
+  return(store)
+  
 }
 
 ## Random package not downloaded properly

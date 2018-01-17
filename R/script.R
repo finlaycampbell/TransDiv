@@ -14,11 +14,11 @@ pathogens <- names(pathogens.param())
 for(i in seq_along(pathogens)) {
 
   # Run the analysis using the outbreak model
-  r <- run.analysis(pathogens[i], runs = 100)
+  r <- run.analysis(pathogens[i], runs = 1)
   save(r, file = paste0('../output/outbreaker/run_', i, '.RData'))
 
   # Run the analysis using the phybreak model
-  r <- run.phyb.analysis(pathogens[i], runs = 100)
+  r <- run.phyb.analysis(pathogens[i], runs = 1)
   save(r, file = paste0('../output/phybreak/run_', i, '.RData'))
   
 }
