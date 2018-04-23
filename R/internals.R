@@ -85,10 +85,10 @@ pathogens.param <- function(param = NULL) {
 ## Describe parameter values for other runs
 create.config <- function() {
 
-  return(list(n.hosts = 20,
+  return(list(n.hosts = 100,
               dur = 500,
               imp = 0,
-              min.n = 5))
+              min.n = 30))
 
 }
 
